@@ -19,6 +19,7 @@ CHROMA_COLLECTION = os.getenv("CHROMA_COLLECTION")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 OLLAMA_URL = os.getenv("OLLAMA_URL")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
+RELEVANCE_THRESHOLD = float(os.getenv("RELEVANCE_THRESHOLD", "0.7"))
 
 
 _client = None
@@ -142,6 +143,14 @@ def _generate_answer(prompt: str) -> str:
 def answer_question(question: str, top_k: int = 3) -> dict:
     sources = query_transcriptions(question, top_k)
 
+    # Relevance guardrail: if no retrieved document clears the similarity
+    # threshold, skip the LLM entirely to avoid hallucination.
+    if not sources or min(s.distance for s in sources) > RELEVANCE_THRESHOLD:
+        return {
+            "answer": "Nie znalazłem w transkrypcjach informacji wystarczająco powiązanych z tym pytaniem.",
+            "sources": [s.model_dump() for s in sources],
+        }
+
     context = "\n".join(
         f"[{i+1}] {item.document}"
         for i, item in enumerate(sources)
@@ -149,7 +158,11 @@ def answer_question(question: str, top_k: int = 3) -> dict:
 
     prompt = (
         "Na podstawie poniższych transkrypcji odpowiedz na pytanie.\n"
-        "Odpowiadaj tylko na podstawie podanych transkrypcji.\n\n"
+        "Odpowiadaj WYŁĄCZNIE na podstawie podanych transkrypcji.\n"
+        "Nie korzystaj z wiedzy ogólnej.\n"
+        "Jeśli transkrypcje nie zawierają bezpośredniej odpowiedzi na pytanie — "
+        "nawet jeśli są tematycznie powiązane — odpowiedz dokładnie: "
+        '"Nie znalazłem odpowiedzi w transkrypcjach."\n\n'
         f"Transkrypcje:\n{context}\n\n"
         f"Pytanie: {question}"
     )

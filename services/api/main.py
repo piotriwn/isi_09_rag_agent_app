@@ -132,7 +132,7 @@ def rag_answer(req: RagAnswerRequest) -> RagAnswerResponse:
             kwargs={"question": req.question, "top_k": req.top_k},
             queue="rag",
         )
-        result = task.get(timeout=60)
+        result = task.get(timeout=180)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Answer generation failed: {e}")
