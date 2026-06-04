@@ -28,12 +28,6 @@ htmlcov/
 # Docker
 .dockerignore
 
-# Audio uploads / temp files
-*.wav
-*.mp3
-*.ogg
-*.flac
-/shared/
 
 # OS
 .DS_Store
