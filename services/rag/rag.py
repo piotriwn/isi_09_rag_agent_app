@@ -157,12 +157,12 @@ def answer_question(question: str, top_k: int = 3) -> dict:
     )
 
     prompt = (
-        "Na podstawie poniższych transkrypcji odpowiedz na pytanie.\n"
-        "Odpowiadaj WYŁĄCZNIE na podstawie podanych transkrypcji.\n"
-        "Nie korzystaj z wiedzy ogólnej.\n"
-        "Jeśli transkrypcje nie zawierają bezpośredniej odpowiedzi na pytanie — "
-        "nawet jeśli są tematycznie powiązane — odpowiedz dokładnie: "
-        '"Nie znalazłem odpowiedzi w transkrypcjach."\n\n'
+        "Poniższe transkrypcje to wypowiedzi klientów banku zarejestrowane podczas rozmów.\n"
+        "Na podstawie tych transkrypcji odpowiedz na pytanie — streszczając, "
+        "co klienci mówili na dany temat.\n"
+        "Odpowiadaj WYŁĄCZNIE na podstawie podanych transkrypcji. Nie korzystaj z wiedzy ogólnej.\n"
+        "Jeśli żadna transkrypcja nie dotyczy pytanego tematu nawet pośrednio, "
+        'odpowiedz dokładnie: "Nie znalazłem odpowiedzi w transkrypcjach."\n\n'
         f"Transkrypcje:\n{context}\n\n"
         f"Pytanie: {question}"
     )
